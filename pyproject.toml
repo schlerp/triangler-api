@@ -1,0 +1,33 @@
+[tool.poetry]
+name = "triangler-api"
+version = "0.1.0"
+description = ""
+authors = ["PattyC <patrickcoffey91@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+packages = [{include = "triangler_api"}]
+
+[tool.poetry.dependencies]
+python = "~3.11.0"
+Django = "^4.2.4"
+scipy = "^1.11.2"
+django-ninja = "^0.22.2"
+
+[tool.poetry.group.dev.dependencies]
+black = "^23.7.0"
+ruff = "^0.0.286"
+mypy = "1.*"
+django-stubs = {extras = ["compatible-mypy"], version = "^4.2.3"}
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.black]
+line-length = 88
+
+[tool.mypy]
+plugins = ["mypy_django_plugin.main"]
+
+[tool.django-stubs]
+django_settings_module = "triangle_api.settings"
