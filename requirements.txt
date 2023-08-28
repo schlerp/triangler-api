@@ -51,6 +51,9 @@ django==4.2.4 ; python_full_version >= "3.11.0" and python_full_version < "3.12.
 filelock==3.12.2 ; python_full_version >= "3.11.0" and python_full_version < "3.12.0" \
     --hash=sha256:002740518d8aa59a26b0c76e10fb8c6e15eae825d34b6fdf670333fd7b938d81 \
     --hash=sha256:cbb791cdea2a72f23da6ac5b5269ab0a0d161e9ef0100e653b69049a7706d1ec
+h11==0.14.0 ; python_full_version >= "3.11.0" and python_full_version < "3.12.0" \
+    --hash=sha256:8f19fbbe99e72420ff35c00b27a34cb9937e902a8b810e2c88300c6f0a3b699d \
+    --hash=sha256:e3fe4ac4b851c468cc8363d500db52c2ead036020723024a109d37346efaa761
 identify==2.5.27 ; python_full_version >= "3.11.0" and python_full_version < "3.12.0" \
     --hash=sha256:287b75b04a0e22d727bc9a41f0d4f3c1bcada97490fa6eabb5b28f0e9097e733 \
     --hash=sha256:fdb527b2dfe24602809b2201e033c2a113d7bdf716db3ca8e3243f735dcecaba
@@ -232,6 +235,9 @@ typing-extensions==4.7.1 ; python_full_version >= "3.11.0" and python_full_versi
 tzdata==2023.3 ; python_full_version >= "3.11.0" and python_full_version < "3.12.0" and sys_platform == "win32" \
     --hash=sha256:11ef1e08e54acb0d4f95bdb1be05da659673de4acbd21bf9c69e94cc5e907a3a \
     --hash=sha256:7e65763eef3120314099b6939b5546db7adce1e7d6f2e179e3df563c70511eda
+uvicorn==0.23.2 ; python_full_version >= "3.11.0" and python_full_version < "3.12.0" \
+    --hash=sha256:1f9be6558f01239d4fdf22ef8126c39cb1ad0addf76c40e760549d2c2f43ab53 \
+    --hash=sha256:4d3cc12d7727ba72b64d12d3cc7743124074c0a69f7b201512fc50c3e3f1569a
 virtualenv==20.24.3 ; python_full_version >= "3.11.0" and python_full_version < "3.12.0" \
     --hash=sha256:95a6e9398b4967fbcb5fef2acec5efaf9aa4972049d9ae41f95e0972a683fd02 \
     --hash=sha256:e5c3b4ce817b0b328af041506a2a299418c98747c4b1e68cb7527e74ced23efc

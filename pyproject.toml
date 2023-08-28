@@ -13,6 +13,7 @@ scipy = "1.*"
 django-ninja = "0.*"
 django-types = "^0.17.0"
 django-stubs-ext = "^4.2.2"
+uvicorn = "^0.23.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "23.*"
@@ -82,4 +83,4 @@ target-version = "py311"
 force-single-line = true
 
 [tool.isort]
-force-single-line = true
+force_single_line = true

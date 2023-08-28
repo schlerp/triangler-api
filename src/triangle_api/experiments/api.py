@@ -8,7 +8,6 @@ from ninja import NinjaAPI
 from ninja import Schema
 
 from experiments.models import Experiment
-from experiments.models import Observation
 
 api = NinjaAPI(title="Triangler")
 
@@ -35,27 +34,31 @@ class ExperimentOut(ExperimentIn):
     id: int
 
 
-@api.get("/experiments")
+@api.get("/experiments", tags=["Experiments"])
 def get_all_experiments(request: HttpRequest) -> list[ExperimentOut]:
+    """Gets all experiments defined in this application."""
     return Experiment.objects.all()  # type: ignore
 
 
-@api.get("/experiments/{experiment_id}")
+@api.get("/experiments/{experiment_id}", tags=["Experiments"])
 def get_experiment_by_id(request: HttpRequest, experiment_id: int) -> ExperimentOut:
+    """Get a specific experiemnt by its experiment ID."""
     experiment = get_object_or_404(Experiment, id=experiment_id)
     return experiment  # type: ignore
 
 
-@api.post("/experiments")
+@api.post("/experiments", tags=["Experiments"])
 def create_experiment(request: HttpRequest, payload: ExperimentIn) -> JustId:
+    """Creates a new experiment with the supplied payload, returns the experiment id."""
     experiment = Experiment.objects.create(**payload.dict())
     return JustId(id=experiment.id)
 
 
-@api.put("/experiments/{experiment_id}")
+@api.put("/experiments/{experiment_id}", tags=["Experiments"])
 def update_experiment(
     request: HttpRequest, experiment_id: int, payload: ExperimentIn
 ) -> Success:
+    """Updates the experiment with `experiment id`, using supplied payload"""
     experiment = get_object_or_404(Experiment, id=experiment_id)
     for attr, value in payload.dict().items():
         setattr(experiment, attr, value)
@@ -63,8 +66,9 @@ def update_experiment(
     return Success(success=True)
 
 
-@api.delete("/experiments/{experiment_id}")
+@api.delete("/experiments/{experiment_id}", tags=["Experiments"])
 def delete_experiment(request: HttpRequest, experiment_id: int) -> Success:
+    """Deletes the experiment with a matching id."""
     experiment = get_object_or_404(Experiment, id=experiment_id)
     experiment.delete()
     return Success(success=True)
@@ -72,7 +76,6 @@ def delete_experiment(request: HttpRequest, experiment_id: int) -> Success:
 
 # Observations
 class ObservationIn(Schema):
-    experiment: int
     experience_level: int
     chosen_sample: Literal["A", "B", "C"]
     observation_date: datetime
@@ -80,38 +83,66 @@ class ObservationIn(Schema):
 
 class ObservationOut(ObservationIn):
     id: int
+    experiment: int
 
 
-@api.get("/observation")
-def get_all_observations(request: HttpRequest) -> list[ObservationOut]:
-    return Observation.objects.all()  # type: ignore
+@api.get("/experiments/{experiment_id}/observations", tags=["Observations"])
+def get_all_observations(
+    request: HttpRequest, experiment_id: int
+) -> list[ObservationOut]:
+    """Gets all observations defined for provided experiment id."""
+    experiment = get_object_or_404(Experiment, id=experiment_id)
+    return experiment.observations.all()  # type: ignore
 
 
-@api.get("/observation/{observation_id}")
-def get_observation_by_id(request: HttpRequest, observation_id: int) -> ObservationOut:
-    observation = get_object_or_404(Experiment, id=observation_id)
+@api.get(
+    "/experiments/{experiment_id}/observations/{observation_id}", tags=["Observations"]
+)
+def get_observation_by_id(
+    request: HttpRequest, experiment_id: int, observation_id: int
+) -> ObservationOut:
+    """Get a specific observation by its experiment id and observation id."""
+    experiment = get_object_or_404(Experiment, id=experiment_id)
+    observation = get_object_or_404(experiment.observations, id=observation_id)
     return observation  # type: ignore
 
 
-@api.post("/observation")
-def create_observation(request: HttpRequest, payload: ExperimentIn) -> JustId:
-    observation = Experiment.objects.create(**payload.dict())
+@api.post("/experiments/{experiment_id}/observation", tags=["Observations"])
+def create_observation(
+    request: HttpRequest, experiment_id: int, payload: ObservationIn
+) -> JustId:
+    """Creates a new observation with the supplied payload, returns the observation id."""
+    experiment = get_object_or_404(Experiment, id=experiment_id)
+    observation = experiment.observations.create(**payload.dict())
     return JustId(id=observation.id)
 
 
-@api.put("/observation/{observation_id}")
+@api.put(
+    "/experiments/{experiment_id}/observation/{observation_id}", tags=["Observations"]
+)
 def update_observation(
-    request: HttpRequest, observation_id: int, payload: ExperimentIn
+    request: HttpRequest,
+    experiment_id: int,
+    observation_id: int,
+    payload: ObservationIn,
 ) -> Success:
-    observation = get_object_or_404(Experiment, id=observation_id)
+    """Updates the observation on experiment, using supplied payload"""
+    experiment = get_object_or_404(Experiment, id=experiment_id)
+    observation = get_object_or_404(experiment.observations, id=observation_id)
     for attr, value in payload.dict().items():
         setattr(observation, attr, value)
     observation.save()
     return Success(success=True)
 
 
-@api.delete("/observation/{observation_id}")
-def delete_observation(request: HttpRequest, observation_id: int) -> Success:
-    experiment = get_object_or_404(Experiment, id=observation_id)
-    experiment.delete()
+@api.delete(
+    "/experiments/{experiment_id}/observation/{observation_id}", tags=["Observations"]
+)
+def delete_observation(
+    request: HttpRequest, experiment_id: int, observation_id: int
+) -> Success:
+    """Deletes the observation on provided experiment with a matching id."""
+    experiment = get_object_or_404(Experiment, id=experiment_id)
+    observation = get_object_or_404(experiment.observations, id=observation_id)
+    observation.delete()
     return Success(success=True)
