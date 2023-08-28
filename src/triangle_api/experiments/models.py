@@ -1,7 +1,11 @@
-import math
+from typing import TYPE_CHECKING
+
 from django.db import models
 from django_stubs_ext.db.models import TypedModelMeta
 from scipy import stats
+
+if TYPE_CHECKING:
+    from django.db.models.manager import RelatedManager
 
 SAMPLE_NAMES = [
     ("A", "Sample A"),
@@ -21,6 +25,7 @@ EXPERIENCE_LEVELS = [
 
 # Create your models here.
 class Observation(models.Model):
+    id = models.AutoField(primary_key=True)
     experiment = models.ForeignKey(
         "Experiment", on_delete=models.CASCADE, related_name="observations"
     )
@@ -33,15 +38,19 @@ class Observation(models.Model):
 
 
 class Experiment(models.Model):
+    id = models.AutoField(primary_key=True)
     name = models.CharField(max_length=128)
     description = models.CharField(max_length=2048)
     date_started = models.DateField()
     date_ended = models.DateField()
     correct_sample = models.CharField(max_length=1, choices=SAMPLE_NAMES)
 
+    if TYPE_CHECKING:
+        observations = RelatedManager["Observation"]()
+
     class Meta(TypedModelMeta):
         pass
-   
+
     def __str__(self):
         return f"{self.name} ({self.date_started}, # samples: {self.sample_size})"
 
@@ -57,7 +66,7 @@ class Experiment(models.Model):
         expected_correct = n_samples / 3
         # expected 2/3 of the time to be incorrect
         expected_incorrect = expected_correct * 2
-        
+
         # number of correct observations
         observed_correct = self.observations.filter(
             chosen_sample=self.correct_sample
@@ -65,7 +74,9 @@ class Experiment(models.Model):
         observed_incorrect = n_samples - observed_correct
 
         correct_x2 = (abs(observed_correct - expected_correct) ** 2) / expected_correct
-        incorrect_x2 = (abs(observed_incorrect - expected_incorrect) ** 2) / expected_incorrect
+        incorrect_x2 = (
+            abs(observed_incorrect - expected_incorrect) ** 2
+        ) / expected_incorrect
 
         x2 = correct_x2 + incorrect_x2
 

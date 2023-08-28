@@ -5,29 +5,78 @@ description = ""
 authors = ["PattyC <patrickcoffey91@gmail.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "triangler_api"}]
 
 [tool.poetry.dependencies]
 python = "~3.11.0"
-Django = "^4.2.4"
-scipy = "^1.11.2"
-django-ninja = "^0.22.2"
+Django = "4.*"
+scipy = "1.*"
+django-ninja = "0.*"
+django-types = "^0.17.0"
+django-stubs-ext = "^4.2.2"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.7.0"
-ruff = "^0.0.286"
-mypy = "1.*"
-django-stubs = {extras = ["compatible-mypy"], version = "^4.2.3"}
+black = "23.*"
+ruff = "0.*"
+pre-commit = "3.*"
 
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
 
+[tool.pyright]
+include = ["src"]
+venvPath = "."
+venv = ".venv"
+
 [tool.black]
 line-length = 88
 
-[tool.mypy]
-plugins = ["mypy_django_plugin.main"]
+[tool.ruff]
+select = [
+    "E",  # pycodestyle errors (flake8)
+    "F",  # pyflakes (flake8)
+    "I",  # isort
+]
+ignore = ["E501"]
 
-[tool.django-stubs]
-django_settings_module = "triangle_api.settings"
+# Allow autofix for all enabled rules (when `--fix`) is provided.
+fixable = ["A", "B", "C", "D", "E", "F", "I"]
+unfixable = [
+    "F841",  # dont automatically remove unused vars, will still error on them
+]
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".hg",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "venv",
+]
+per-file-ignores = {}
+
+# Same as Black.
+line-length = 88
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+# Assume Python 3.11.
+target-version = "py311"
+
+[tool.ruff.isort]
+force-single-line = true

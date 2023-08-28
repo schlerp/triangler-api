@@ -1,16 +1,17 @@
-from datetime import datetime
 import random
+from datetime import datetime
 
 from django.test import TestCase
-from experiments.models import SAMPLE_NAMES, Experiment, Observation
-from experiments.models import Experiment
-from experiments.models import SAMPLE_NAMES
-from experiments.models import EXPERIENCE_LEVELS
 
+from experiments.models import EXPERIENCE_LEVELS
+from experiments.models import SAMPLE_NAMES
+from experiments.models import Experiment
+from experiments.models import Observation
 
 N_SAMPLES = 60
 N_CORRECT = 28
 CORRECT_ANSWER = SAMPLE_NAMES[0][0]
+
 
 class ExperimentTestCase(TestCase):
     def setUp(self):
@@ -21,7 +22,7 @@ class ExperimentTestCase(TestCase):
             date_ended=datetime.now().date(),
             correct_sample=CORRECT_ANSWER,
         )
-        
+
         # create the observations
         for i in range(N_SAMPLES):
             choice = random.choice(["B", "C"])
@@ -38,5 +39,5 @@ class ExperimentTestCase(TestCase):
 
     def test_calculate_p_value(self):
         """ensure that the calculated P-value is the expected value"""
-        p_value = self.experiment.calculate_p_value()
+        p_value = self.experiment.calculate_p_value
         self.assertLessEqual(p_value, 0.05)

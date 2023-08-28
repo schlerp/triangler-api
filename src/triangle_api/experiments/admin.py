@@ -1,9 +1,10 @@
 from django.contrib import admin
-from django.contrib.admin.options import get_content_type_for_model
 from django.contrib.admin.models import LogEntry
+from django.contrib.admin.options import get_content_type_for_model
 
 from experiments.models import Experiment
 from experiments.models import Observation
+
 
 # Register your models here.
 @admin.register(Experiment)
@@ -17,11 +18,11 @@ class ExperimentAdmin(admin.ModelAdmin):
         "p_value",
     )
     list_filter = ["date_started"]
-    search_fields = ["name", "description"]  
+    search_fields = ["name", "description"]
 
     def p_value(self, experiment: Experiment) -> str:
         return f"{experiment.calculate_p_value:.3f}"
-    
+
     def n_observations(self, experiment: Experiment) -> str:
         return f"{experiment.sample_size}"
 
@@ -35,9 +36,10 @@ class ExperimentAdmin(admin.ModelAdmin):
                 object_id=obj.id,
                 action_flag=2,
                 change_message=change_message,
-                object_repr=obj.__str__()[:200]
+                object_repr=obj.__str__()[:200],
             )
+
 
 @admin.register(Observation)
 class ObservationAdmin(admin.ModelAdmin):
-    readonly_fields = ('experiment',)
+    readonly_fields = ("experiment",)
