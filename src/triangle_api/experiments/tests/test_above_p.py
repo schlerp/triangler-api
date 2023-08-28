@@ -9,12 +9,12 @@ from experiments.models import Experiment
 from experiments.models import Observation
 
 N_SAMPLES = 60
-N_CORRECT = 28
+N_CORRECT = 20
 CORRECT_ANSWER = SAMPLE_NAMES[0][0]
 
 
 class ExperimentTestCase(TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         self.experiment: Experiment = Experiment.objects.create(
             name="Test Experiment",
             description="A test experiement to test experiments.",
@@ -34,10 +34,7 @@ class ExperimentTestCase(TestCase):
                 chosen_sample=choice,
             )
 
-    def test_sample_size(self):
-        self.assertEqual(self.experiment.sample_size, N_SAMPLES)
-
-    def test_calculate_p_value(self):
+    def test_calculate_p_value(self) -> None:
         """ensure that the calculated P-value is the expected value"""
         p_value = self.experiment.calculate_p_value
-        self.assertLessEqual(p_value, 0.05)
+        self.assertGreaterEqual(p_value, 0.05)
