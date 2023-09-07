@@ -13,7 +13,6 @@ class ExperimentAdmin(admin.ModelAdmin):
         "name",
         "date_started",
         "date_ended",
-        "correct_sample",
         "n_observations",
         "p_value",
     )
@@ -21,7 +20,7 @@ class ExperimentAdmin(admin.ModelAdmin):
     search_fields = ["name", "description"]
 
     def p_value(self, experiment: Experiment) -> str:
-        return f"{experiment.calculate_p_value:.3f}"
+        return f"{experiment.p_value:.3f}"
 
     def n_observations(self, experiment: Experiment) -> str:
         return f"{experiment.sample_size}"

@@ -14,11 +14,14 @@ django-ninja = "0.*"
 django-types = "^0.17.0"
 django-stubs-ext = "^4.2.2"
 uvicorn = "^0.23.2"
+tzdata = "^2023.3"
+django-cors-headers = "^4.2.0"
 
 [tool.poetry.group.dev.dependencies]
 black = "23.*"
 ruff = "0.*"
 pre-commit = "3.*"
+memray = "^1.9.1"
 
 [build-system]
 requires = ["poetry-core"]

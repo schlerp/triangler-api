@@ -36,5 +36,5 @@ class ExperimentTestCase(TestCase):
 
     def test_calculate_p_value(self) -> None:
         """ensure that the calculated P-value is the expected value"""
-        p_value = self.experiment.calculate_p_value
+        p_value = self.experiment.p_value
         self.assertLessEqual(p_value, 0.05)
