@@ -10,7 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
+import os
 from pathlib import Path
+from typing import Optional
+from typing import Type
+from typing import TypeVar
 
 import django_stubs_ext
 
@@ -22,17 +26,44 @@ django_stubs_ext.monkeypatch()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+T = TypeVar("T")
+
+
+def get_env(
+    key: str,
+    default: Optional[str] = None,
+    dtype: Type[T] = str,
+    required: bool = False,
+) -> Optional[T]:
+    """gets an env var from the environ, casts it to dtype"""
+    value = os.environ.get(key, default)
+    if value is None and required:
+        raise Exception(f"env var '{key}' must be set!")
+    if dtype == bool:
+        return dtype(str(value).lower() in ["y", "yes", "1"])
+    if value is not None:
+        return dtype(value)
+    return value
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
+IS_PROD = get_env("IS_PROD", dtype=bool, default="yes")
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = "django-insecure-!0kppg1!r+vbxut6%8v@v!0)$5*1h5v8l3y4^#^c=9a@vi0moh"
+if IS_PROD:
+    SECRET_KEY = get_env("DJANGO_SECRET_KEY", required=True)
+    DEBUG = False
+else:
+    SECRET_KEY = "django-insecure-!0kppg1!r+vbxut6%8v@v!0)$5*1h5v8l3y4^#^c=9a@vi0moh"
+    DEBUG = True
 
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
-ALLOWED_HOSTS = []
-
+ALLOWED_HOSTS = ["localhost"]
+CSRF_TRUSTED_ORIGINS = ["http://localhost:5173"]
+CSRF_COOKIE_SECURE = False
+CSRF_COOKIE_HTTPONLY = False
+os.environ["NINJA_SKIP_REGISTRY"] = "yes"
 
 # Application definition
 
@@ -45,6 +76,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "experiments",
+    "userauth",
 ]
 
 MIDDLEWARE = [
@@ -135,5 +167,6 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
 ]
+CORS_ALLOW_CREDENTIALS = True
 
 OBSERVATION_TOKEN_LENGTH = 4

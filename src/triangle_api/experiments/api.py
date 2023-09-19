@@ -3,6 +3,7 @@ from django.shortcuts import get_object_or_404
 from ninja import ModelSchema
 from ninja import NinjaAPI
 from ninja import Schema
+from ninja.security import django_auth
 
 from experiments.models import Experiment
 from experiments.models import Observation
@@ -11,7 +12,13 @@ from experiments.models import ObservationToken
 from experiments.models import get_experience_level_description
 from experiments.models import get_experience_level_id
 
-api = NinjaAPI(title="Triangler")
+api = NinjaAPI(
+    title="Triangler",
+    version="1.0.0",
+    urls_namespace="v1",
+    auth=django_auth,
+    csrf=True,  # required for django_auth
+)
 
 
 # common schemas
@@ -306,6 +313,7 @@ def get_observation_response_by_id(
     "/experiments/{experiment_id}/responses",
     tags=["Observation Responses"],
     response=JustId,
+    # auth=None,  # we want anonymous users to be able to interact with this api
 )
 def create_observation_response(
     request: HttpRequest, experiment_id: int, payload: ObservationResponseIn
