@@ -7,15 +7,17 @@ license = "MIT"
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "~3.11.0"
+python = "~3.12.0"
 Django = "4.*"
 scipy = "1.*"
-django-ninja = "0.*"
+numpy = "1.26.*"
+django-ninja = "1.*"
 django-types = "^0.17.0"
 django-stubs-ext = "^4.2.2"
 uvicorn = "^0.23.2"
 tzdata = "^2023.3"
 django-cors-headers = "^4.2.0"
+django-ninja-jwt = {extras = ["crypto"], version = "^5.2.9"}
 
 [tool.poetry.group.dev.dependencies]
 black = "23.*"

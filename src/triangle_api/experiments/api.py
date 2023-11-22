@@ -1,9 +1,13 @@
+from django.http import HttpResponse
 from django.http.request import HttpRequest
 from django.shortcuts import get_object_or_404
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import ensure_csrf_cookie
 from ninja import ModelSchema
-from ninja import NinjaAPI
 from ninja import Schema
-from ninja.security import django_auth
+from ninja_extra import NinjaExtraAPI
+from ninja_jwt.authentication import JWTAuth
+from ninja_jwt.controller import NinjaJWTDefaultController
 
 from experiments.models import Experiment
 from experiments.models import Observation
@@ -12,13 +16,19 @@ from experiments.models import ObservationToken
 from experiments.models import get_experience_level_description
 from experiments.models import get_experience_level_id
 
-api = NinjaAPI(
+api = NinjaExtraAPI(
     title="Triangler",
     version="1.0.0",
     urls_namespace="v1",
-    auth=django_auth,
-    csrf=True,  # required for django_auth
 )
+api.register_controllers(NinjaJWTDefaultController)
+
+
+@api.post("/csrf")
+@ensure_csrf_cookie
+@csrf_exempt
+def get_csrf_token(request):
+    return HttpResponse()
 
 
 # common schemas
@@ -57,7 +67,9 @@ class ExperimentOut(ModelSchema):
         ]
 
 
-@api.get("/experiments", tags=["Experiments"], response=list[ExperimentOut])
+@api.get(
+    "/experiments", tags=["Experiments"], response=list[ExperimentOut], auth=JWTAuth()
+)
 def get_all_experiments(request: HttpRequest) -> list[ExperimentOut]:
     """Gets all experiments defined in this application."""
     return [
