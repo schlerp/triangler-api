@@ -76,7 +76,7 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     "corsheaders",
     "experiments",
-    "userauth",
+    "ninja-jwt",
 ]
 
 MIDDLEWARE = [
