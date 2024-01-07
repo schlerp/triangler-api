@@ -16,7 +16,6 @@ from typing import Optional
 from typing import Type
 from typing import TypeVar
 
-# import datetime
 import django_stubs_ext
 
 # monkey patch for django stubs to make related models work better with mypy
@@ -175,11 +174,3 @@ CORS_ALLOWED_ORIGINS = [
 CORS_ALLOW_CREDENTIALS = True
 
 OBSERVATION_TOKEN_LENGTH = 4
-
-
-# from example here: https://github.com/eadwinCode/bookstoreapi/blob/master/bookstoreapi/settings/base.py#L184
-# NINJA_JWT = {
-#    "AUTH_TOKEN_CLASSES": ("ninja_jwt.tokens.SlidingToken",),
-#    "SLIDING_TOKEN_LIFETIME": datetime.timedelta(hours=5),
-#    "SLIDING_TOKEN_REFRESH_LIFETIME": datetime.timedelta(days=1),
-# }
