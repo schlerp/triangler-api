@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.urls import path
 from experiments.api import api
 
-from triangle_api.triangle_api import views
+from triangle_api import views  # type: ignore
 
 urlpatterns = [
     path("admin/", admin.site.urls),

@@ -82,7 +82,6 @@ INSTALLED_APPS = [
     "experiments",
     "ninja_extra",
     "ninja_jwt",
-    "userauth",
 ]
 
 MIDDLEWARE = [
