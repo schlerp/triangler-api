@@ -9,7 +9,6 @@ APP_NAME:="triangler_api"
 run-develop:
 	docker build --target develop -t ${APP_NAME} . && docker run --rm --env-file ./dev.env -v ${ROOT_DIR}/src/triangle_api:/app -p 8000:8000 ${APP_NAME}
 
-
 run-shell:
 	docker build --target develop -t ${APP_NAME} . && docker run --rm -it --env-file ./dev.env -v ${ROOT_DIR}/src/triangle_api:/app --entrypoint bash -p 8000:8000 ${APP_NAME}
 
