@@ -1,8 +1,5 @@
-from django.http import HttpResponse
 from django.http.request import HttpRequest
 from django.shortcuts import get_object_or_404
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.csrf import ensure_csrf_cookie
 from ninja import ModelSchema
 from ninja import Schema
 from ninja_extra import NinjaExtraAPI
@@ -24,13 +21,6 @@ api = NinjaExtraAPI(
 api.register_controllers(NinjaJWTDefaultController)
 
 
-@api.post("/csrf")
-@ensure_csrf_cookie
-@csrf_exempt
-def get_csrf_token(request):
-    return HttpResponse()
-
-
 # common schemas
 class JustId(Schema):
     id: int
@@ -42,7 +32,7 @@ class Success(Schema):
 
 # experiment schemas
 class ExperimentIn(ModelSchema):
-    class Config:
+    class Config:  # type: ignore
         model = Experiment
         model_fields = [
             "name",
@@ -56,7 +46,7 @@ class ExperimentOut(ModelSchema):
     sample_size: int
     p_value: float
 
-    class Config:
+    class Config:  # type: ignore
         model = Experiment
         model_fields = [
             "id",
@@ -130,7 +120,7 @@ def delete_experiment(request: HttpRequest, experiment_id: int) -> Success:
 
 # Observations
 class ObservationIn(ModelSchema):
-    class Config:
+    class Config:  # type: ignore
         model = Observation
         model_fields = [
             "correct_sample",
@@ -140,7 +130,7 @@ class ObservationIn(ModelSchema):
 class ObservationOut(ModelSchema):
     token: str
 
-    class Config:
+    class Config:  # type: ignore
         model = Observation
         model_fields = [
             "id",
@@ -252,7 +242,7 @@ class ObservationResponseIn(ModelSchema):
     experience_level: str
     token: str
 
-    class Config:
+    class Config:  # type: ignore
         model = ObservationResponse
         model_fields = [
             "chosen_sample",
@@ -264,7 +254,7 @@ class ObservationResponseOut(ModelSchema):
     experience_level: str
     observation_id: int
 
-    class Config:
+    class Config:  # type: ignore
         model = ObservationResponse
         model_fields = [
             "id",

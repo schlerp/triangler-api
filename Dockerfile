@@ -1,86 +1,64 @@
 # syntax=docker/dockerfile:1
 
 ## build our base image (used for all stages except prod)
-FROM cgr.dev/chainguard/python:latest-dev as base
+FROM ubuntu:22.04 as base
 
 # set our env vars
 ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PIP_DISABLE_PIP_VERSION_CHECK=on \
-    PIP_DEFAULT_TIMEOUT=100 \
-    POETRY_VERSION=1.5.0 \
-    POETRY_HOME="/opt/poetry" \
-    POETRY_VIRTUALENVS_IN_PROJECT=true \
-    POETRY_NO_INTERACTION=1 \
-    BUILDER_DIR="/opt/build/" \
-    VENV_PATH="/opt/build/.venv" \
-    APP_DIR="/app"
+    PYTHONDONTWRITEBYTECODE=1
 
-ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:${PATH}"
+RUN groupadd -g 999 python && \
+    useradd -r -u 999 -g python python
 
+RUN --mount=type=cache,target=/var/lib/apt/lists \
+    --mount=type=cache,target=/var/cache/apt/archives \
+    apt-get update \
+    && apt-get install -y --no-install-recommends \
+    curl \
+    ca-certificates
 
-## This is the base builder image (contains poetry and non dev deps)
-FROM base as builder-base
+ENV RYE_HOME="/opt/rye"
+ENV PATH="$RYE_HOME/shims:$PATH"
 
-USER root
-RUN apk add curl
-
-# install poetry
-RUN --mount=type=cache,target=/root/.cache \
-    curl -sSL https://install.python-poetry.org | python3 -
-
-# copy project requirement files here to ensure they will be cached.
-WORKDIR $BUILDER_DIR
-COPY poetry.lock pyproject.toml ./
-
-# install runtime deps - uses $POETRY_VIRTUALENVS_IN_PROJECT internally
-RUN --mount=type=cache,target=/root/.cache \
-    poetry install --no-root --without=dev
+RUN curl -sSf https://rye-up.com/get | RYE_NO_AUTO_INSTALL=1 RYE_INSTALL_OPTION="--yes" bash
 
 
-## the builder dev image
-FROM builder-base as builder-dev
+FROM base as builder
 
-WORKDIR $BUILDER_DIR
+RUN --mount=type=cache,target=/var/lib/apt/lists \
+    --mount=type=cache,target=/var/cache/apt/archives \
+    apt-get update \
+    && apt-get install -y --no-install-recommends \
+    build-essential
 
-# quicker install as runtime deps are already installed
-RUN --mount=type=cache,target=/root/.cache \
-    poetry install --no-root --with=dev
+WORKDIR /tmp
+RUN --mount=type=bind,source=pyproject.toml,target=pyproject.toml \
+    --mount=type=bind,source=requirements.lock,target=requirements.lock \
+    --mount=type=bind,source=requirements-dev.lock,target=requirements-dev.lock \
+    --mount=type=bind,source=README.md,target=README.md \
+    rye sync --no-dev --no-lock
 
-## this is our development image
-# to use: https://docs.docker.com/build/building/multi-stage/#stop-at-a-specific-build-stage
-FROM base as develop
+# final stage
+FROM base as final
 
-ENV FASTAPI_ENV=development \
-    PATH="$VENV_PATH/bin:$PATH"
-WORKDIR $APP_DIR
-
-# copy in our built poetry + venv
-COPY --from=builder-base $BUILDER_DIR $BUILDER_DIR
-
-# mount application here repo base here (-v "$(pwd):/app")
-WORKDIR $APP_DIR
-
-EXPOSE 8000
-
-ENTRYPOINT ["uvicorn", "--host", "0.0.0.0", "--reload", "triangle_api.asgi:application"]
-
-
-## This is our production image
-FROM cgr.dev/chainguard/python:latest as prod
-
-
-# venv is hardcoded here since this is from a different chain of stages
-ENV FASTAPI_ENV=production \
-    PATH="/opt/build/.venv/bin:$PATH"
-
-COPY --from=builder-base /opt/build/.venv /opt/build/.venv
+USER 999
 
 WORKDIR /app
 
-# only copy in the applications files for prod (no tests etc..)
-COPY ./src/triangle_api .
+COPY --from=builder --chown=999:999 /tmp/.venv /tmp/.venv
+ENV PATH="/tmp/.venv/bin:$PATH"
+
+COPY --chown=999:999 ./src/triangle_api .
 
 EXPOSE 8000
+
+
+FROM final as develop
+
+ENTRYPOINT ["./manage.py", "runserver", "0.0.0.0:8000"]
+#["uvicorn", "--host", "0.0.0.0", "--reload", "triangle_api.asgi:application"]
+
+
+FROM final as prod
 
 ENTRYPOINT ["uvicorn", "--host", "0.0.0.0", "triangle_api.asgi:application"]

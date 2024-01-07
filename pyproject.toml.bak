@@ -1,46 +1,33 @@
-[project]
+[tool.poetry]
 name = "triangler-api"
 version = "0.1.0"
-description = "Add your description here"
+description = ""
+authors = ["PattyC <patrickcoffey91@gmail.com>"]
 license = "MIT"
-authors = [
-    { name = "PattyC", email = "patrickcoffey91@gmail.com" }
-]
-dependencies = [
-    "django>=4.2.8",
-    "scipy>=1.10.1",
-    "numpy>=1.24.4",
-    "django-ninja>=1.1.0",
-    "django-types>=0.19.1",
-    "django-stubs-ext>=4.2.7",
-    "uvicorn[standard]>=0.25.0",
-    "tzdata>=2023.4",
-    "django-cors-headers>=4.3.1",
-    "django-ninja-jwt[crypto]>=5.2.10",
-]
 readme = "README.md"
-requires-python = ">= 3.11"
 
-#[project.scripts]
-#hello = "triangler-api:hello"
+[tool.poetry.dependencies]
+python = "~3.12.0"
+Django = "4.*"
+scipy = "1.*"
+numpy = "1.26.*"
+django-ninja = "1.*"
+django-types = "^0.17.0"
+django-stubs-ext = "^4.2.2"
+uvicorn = "^0.23.2"
+tzdata = "^2023.3"
+django-cors-headers = "^4.2.0"
+django-ninja-jwt = {extras = ["crypto"], version = "^5.2.9"}
+
+[tool.poetry.group.dev.dependencies]
+black = "23.*"
+ruff = "0.*"
+pre-commit = "3.*"
+memray = "^1.9.1"
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
-
-[tool.rye]
-managed = true
-dev-dependencies = [
-    "black>=23.12.1",
-    "ruff>=0.1.9",
-    "memray>=1.11.0",
-]
-
-[tool.hatch.metadata]
-allow-direct-references = true
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/triangler_api"]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
 
 [tool.pyright]
 include = ["src"]
