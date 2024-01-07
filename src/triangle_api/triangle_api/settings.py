@@ -16,7 +16,6 @@ from typing import Optional
 from typing import Type
 from typing import TypeVar
 
-# import datetime
 import django_stubs_ext
 
 # monkey patch for django stubs to make related models work better with mypy
