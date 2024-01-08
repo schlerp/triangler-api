@@ -3,7 +3,7 @@ default_language_version:
   python: "3.11"
 repos:
   - repo: https://github.com/RobertCraigie/pyright-python
-    rev: v1.1.344
+    rev: v1.1.345
     hooks:
     - id: pyright
 
@@ -28,7 +28,7 @@ repos:
       - id: black
         stages: ["commit"]
 
-  - repo: https://github.com/charliermarsh/ruff-pre-commit
+  - repo: https://github.com/astral-sh/ruff-pre-commit
     rev: "v0.1.11"
     hooks:
       - id: ruff
